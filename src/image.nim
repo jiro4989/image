@@ -4,6 +4,7 @@
 # PNGを読む https://hoshi-sano.hatenablog.com/entry/2013/08/18/112550
 # PNGを読む http://darkcrowcorvus.hatenablog.jp/entry/2017/02/12/235044#IHDR-%E3%83%98%E3%83%83%E3%83%80%E6%83%85%E5%A0%B1
 # Pythonで画像生成 http://d.hatena.ne.jp/c-yan2/20100317/1268825146
+# RubyでPNG http://d.hatena.ne.jp/ku-ma-me/20091003/p1
 
 import crc32
 import strutils, streams, algorithm, sequtils
@@ -57,11 +58,25 @@ var data = [
 var dataDiv = data.mapIt(it[0].toHexStr it[1]).join("")
 s.write chunk("IHDR", dataDiv)
 
-echo crc32("IHDR" & dataDiv)
-echo uint8(crc32("IHDR" & dataDiv))
-echo $(uint8(crc32("IHDR" & dataDiv)))
-
 # IDATチャンク: 可変長: イメージデータ
+var rawData = [
+  @[@[0, 0, 0], @[0, 0, 0], @[0, 0, 0]],
+  @[@[0, 0, 0], @[0, 0, 0], @[0, 0, 0]],
+  @[@[255, 255, 255], @[255, 255, 255], @[255, 255, 255]],
+]
+
+for i in 0..<rawData.len:
+  rawData[i].insert(@[0], 0)
+
+var imgData: seq[int]
+for line in rawData:
+  for cell in line:
+    imgData.add cell
+
+var idat = imgData.mapIt(it.toHexStr 2).join("")
+echo idat
+# TODO: zlib deflate
+
 s.write chunk("IDAT", "")
 
 # IENDチャンク: 12byte: イメージ終端
