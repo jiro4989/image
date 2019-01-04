@@ -3,6 +3,7 @@
 # PNG書式 https://www.setsuki.com/hsp/ext/png.htm
 # PNGを読む https://hoshi-sano.hatenablog.com/entry/2013/08/18/112550
 # PNGを読む http://darkcrowcorvus.hatenablog.jp/entry/2017/02/12/235044#IHDR-%E3%83%98%E3%83%83%E3%83%80%E6%83%85%E5%A0%B1
+# Pythonで画像生成 http://d.hatena.ne.jp/c-yan2/20100317/1268825146
 
 import crc32
 import strutils, streams, algorithm
@@ -23,9 +24,6 @@ type
     colorType: ColorType
     pixels: seq[seq[Pixel]]
   
-  BitDepth = enum
-    grayScale = '\x00', trueColor = '\x02', indexColor = '\x03', grayScaleAlpha = '\x04', trueColorAlpha = '\x06'
-
 var
   imageWidth = 701
   imageHeight = 191
@@ -59,11 +57,11 @@ s.write imageHeight.toHex(8).parseHexStr
 
 # (1)ビット深度
 # TODO: とりあえず決め打ち
-s.write BitDepth.trueColorAlpha
+s.write 0x08'u8
 
 # (1)カラータイプ
 # TODO: とりあえず決め打ち
-s.write '\x08'
+s.write 0x06'u8
 
 # (1)圧縮手法
 # TODO: とりあえず決め打ち
@@ -79,22 +77,24 @@ s.write '\x00'
 # (4)CRC (cyclic redundancy check)
 # chunk type と chunk dataで計算する
 # https://qiita.com/mikecat_mixc/items/e5d236e3a3803ef7d3c5
+let w = imageWidth.toHex(8).parseHexStr
+let h = imageHeight.toHex(8).parseHexStr
+s.write crc32("IHDR" & w & h & $0x06'u8 & $0x08'u8 & $0x00'u8 & $0x00'u8 & $0x00'u8)
 
-when false:
+# IDATチャンク: 可変長: イメージデータ
+# TODO
 
-  # IDATチャンク: 可変長: イメージデータ
+# IENDチャンク: 12byte: イメージ終端
+## (4)length
+s.write '\x00' # 固定
+s.write '\x00' # 固定
+s.write '\x00' # 固定
+s.write '\x00' # 固定
 
-  # IENDチャンク: 12byte: イメージ終端
-  ## (4)length
-  s.write '\x00' # 固定
-  s.write '\x00' # 固定
-  s.write '\x00' # 固定
-  s.write '\x00' # 固定
+## (4)chunk type
+s.write '\x49' # 固定
+s.write '\x45' # 固定
+s.write '\x4E' # 固定
+s.write '\x44' # 固定
 
-  ## (4)chunk type
-  s.write '\x49' # 固定
-  s.write '\x45' # 固定
-  s.write '\x4E' # 固定
-  s.write '\x44' # 固定
-
-  ## (4)crc
+## (4)crc
