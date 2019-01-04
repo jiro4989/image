@@ -28,7 +28,7 @@ proc toHexStr(n: int, digit: int): string =
   n.toHex(digit).parseHexStr
 
 proc chunk(t: string, d: string): string =
-  d.len.toHexStr(8) & t & d
+  d.len.toHexStr(8) & t & d & crc32(t & d).int.toHex(8).parseHexStr
 
 var
   imageWidth = 701
@@ -56,13 +56,13 @@ var data = [
 
 var dataDiv = data.mapIt(it[0].toHexStr it[1]).join("")
 s.write chunk("IHDR", dataDiv)
-s.write crc32("IHDR" & dataDiv)
-echo chunk("IHDR", dataDiv).len
-echo len($(crc32("IHDR" & dataDiv)))
+
+echo crc32("IHDR" & dataDiv)
+echo uint8(crc32("IHDR" & dataDiv))
+echo $(uint8(crc32("IHDR" & dataDiv)))
 
 # IDATチャンク: 可変長: イメージデータ
-# TODO
+s.write chunk("IDAT", "")
 
 # IENDチャンク: 12byte: イメージ終端
 s.write chunk("IEND", "")
-s.write crc32("IEND" & "")
