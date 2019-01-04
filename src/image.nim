@@ -2,9 +2,10 @@
 # C https://www.mm2d.net/main/prog/c/
 # PNG書式 https://www.setsuki.com/hsp/ext/png.htm
 # PNGを読む https://hoshi-sano.hatenablog.com/entry/2013/08/18/112550
+# PNGを読む http://darkcrowcorvus.hatenablog.jp/entry/2017/02/12/235044#IHDR-%E3%83%98%E3%83%83%E3%83%80%E6%83%85%E5%A0%B1
 
+import crc32
 import strutils, streams, algorithm
-import sequtils
 
 type
   RGBA = object
@@ -21,6 +22,9 @@ type
     width, height: uint32
     colorType: ColorType
     pixels: seq[seq[Pixel]]
+  
+  BitDepth = enum
+    grayScale = '\x00', trueColor = '\x02', indexColor = '\x03', grayScaleAlpha = '\x04', trueColorAlpha = '\x06'
 
 var
   imageWidth = 701
@@ -47,24 +51,36 @@ s.write '\x52' # 固定
 
 ## chunk data
 
-echo '\x61'
-echo '\x70'
-echo chr('\x70'.int)
-echo chr('\x61'.int + '\x0f'.int)
-
 # (4)画像の横幅
 s.write imageWidth.toHex(8).parseHexStr
 
 # (4)画像の縦幅
 s.write imageHeight.toHex(8).parseHexStr
 
+# (1)ビット深度
+# TODO: とりあえず決め打ち
+s.write BitDepth.trueColorAlpha
+
+# (1)カラータイプ
+# TODO: とりあえず決め打ち
+s.write '\x08'
+
+# (1)圧縮手法
+# TODO: とりあえず決め打ち
+s.write '\x00'
+
+# (1)フィルター手法
+s.write '\x00'
+
+# (1)インターレース手法
+# なし = 0, あり = 1
+s.write '\x00'
+
+# (4)CRC (cyclic redundancy check)
+# chunk type と chunk dataで計算する
+# https://qiita.com/mikecat_mixc/items/e5d236e3a3803ef7d3c5
+
 when false:
-  # (1)ビット深度
-  # (1)カラータイプ
-  # (1)圧縮手法
-  # (1)フィルター手法
-  # (1)インターレース手法
-  # (4)CRC (cyclic redundancy check)
 
   # IDATチャンク: 可変長: イメージデータ
 
