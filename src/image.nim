@@ -24,6 +24,9 @@ type
     colorType: ColorType
     pixels: seq[seq[Pixel]]
   
+proc toHexStr(n: int, digit: int): string =
+  n.toHex(digit).parseHexStr
+
 var
   imageWidth = 701
   imageHeight = 191
@@ -36,49 +39,44 @@ for data in ['\x89', 'P', 'N', 'G', '\x0D', '\x0A', '\x1A', '\x0A']:
 
 # IHDRチャンク: 25byte: イメージヘッダ https://www.setsuki.com/hsp/ext/chunk/IHDR.htm
 ## (4)length
-s.write '\x00' # 固定
-s.write '\x00' # 固定
-s.write '\x00' # 固定
-s.write '\x0d' # 固定
+s.write 13.toHexStr 8
 
 ## (4)chunk type
-s.write '\x49' # 固定
-s.write '\x48' # 固定
-s.write '\x44' # 固定
-s.write '\x52' # 固定
+s.write "IHDR"
 
 ## chunk data
 
 # (4)画像の横幅
-s.write imageWidth.toHex(8).parseHexStr
+s.write imageWidth.toHexStr 8
 
 # (4)画像の縦幅
-s.write imageHeight.toHex(8).parseHexStr
+s.write imageHeight.toHexStr 8
 
 # (1)ビット深度
 # TODO: とりあえず決め打ち
-s.write 0x08'u8
+#s.write 0x08'u8
+s.write 8.toHexStr 2
 
 # (1)カラータイプ
 # TODO: とりあえず決め打ち
-s.write 0x06'u8
+s.write 6.toHexStr 2
 
 # (1)圧縮手法
 # TODO: とりあえず決め打ち
-s.write '\x00'
+s.write 0.toHexStr 2
 
 # (1)フィルター手法
-s.write '\x00'
+s.write 0.toHexStr 2
 
 # (1)インターレース手法
 # なし = 0, あり = 1
-s.write '\x00'
+s.write 0.toHexStr 2
 
 # (4)CRC (cyclic redundancy check)
 # chunk type と chunk dataで計算する
 # https://qiita.com/mikecat_mixc/items/e5d236e3a3803ef7d3c5
-let w = imageWidth.toHex(8).parseHexStr
-let h = imageHeight.toHex(8).parseHexStr
+let w = imageWidth.toHexStr 8
+let h = imageHeight.toHexStr 8
 s.write crc32("IHDR" & w & h & $0x06'u8 & $0x08'u8 & $0x00'u8 & $0x00'u8 & $0x00'u8)
 
 # IDATチャンク: 可変長: イメージデータ
@@ -92,9 +90,6 @@ s.write '\x00' # 固定
 s.write '\x00' # 固定
 
 ## (4)chunk type
-s.write '\x49' # 固定
-s.write '\x45' # 固定
-s.write '\x4E' # 固定
-s.write '\x44' # 固定
-
+s.write "IEND"
 ## (4)crc
+#s.write crc32("IEND")
