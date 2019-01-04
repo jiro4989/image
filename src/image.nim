@@ -76,6 +76,8 @@ for line in rawData:
 var idat = imgData.mapIt(it.toHexStr 2).join("")
 echo idat
 # TODO: zlib deflate
+# http://darkcrowcorvus.hatenablog.jp/entry/2016/09/27/222117
+# RFC https://www.futomi.com/lecture/japanese/rfc1951.html
 
 s.write chunk("IDAT", "")
 
