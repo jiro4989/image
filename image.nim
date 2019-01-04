@@ -22,23 +22,6 @@ type
     colorType: ColorType
     pixels: seq[seq[Pixel]]
 
-proc toHexChars*(n: int): seq[char] =
-  runnableExamples:
-    doAssert 1.toHexChars == @['\x00','\x01']
-    doAssert 15.toHexChars == @['\x00','\x0F']
-    doAssert 16.toHexChars == @['\x00', '\x01','\x00']
-    doAssert 512.toHexChars == @['\x00', '\x02','\x00','\x00']
-  var a = n
-  while true:
-    var
-      x = a / 16
-      y = a mod 16
-    result.add chr(y)
-    if x == 0:
-      break
-    a = x.int
-  result.reverse
-
 var
   imageWidth = 701
   imageHeight = 191
