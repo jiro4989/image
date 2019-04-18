@@ -12,3 +12,7 @@ bin = @["image"]
 
 requires "nim >= 0.19.0"
 requires "crc32"
+
+task docs, "Generate documents":
+  exec "nimble doc src/image/pbm.nim -o:docs/pbm.html"
+  exec "nimble doc src/image/pgm.nim -o:docs/pgm.html"
