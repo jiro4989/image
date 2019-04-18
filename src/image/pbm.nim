@@ -1,3 +1,20 @@
+## pbm is PBM(Portable bitmap) image encoder/decorder module.
+##
+## PBM example
+## ===========
+##
+## .. code-block:: text
+##
+##    P1
+##    # comment
+##    5 6
+##    0 0 1 0 0
+##    0 1 1 0 0
+##    0 0 1 0 0
+##    0 0 1 0 0
+##    0 0 1 0 0
+##    1 1 1 1 1
+##
 ## See also:
 ## * https://ja.wikipedia.org/wiki/PNM_(%E7%94%BB%E5%83%8F%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88)
 
@@ -14,15 +31,6 @@ type
     col*, row*: int
     data*: seq[seq[PBMValue]]
   PBM* = ref PBMObj
-    ## P1
-    ## # comment
-    ## 5 6
-    ## 0 0 1 0 0
-    ## 0 1 1 0 0
-    ## 0 0 1 0 0
-    ## 0 0 1 0 0
-    ## 0 0 1 0 0
-    ## 1 1 1 1 1
 
 const fileDiscriptor* = "P1"
 
