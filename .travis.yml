@@ -5,5 +5,5 @@ before_install:
   - docker pull nimlang/nim
 script:
   - docker run nimlang/nim nim --version
-  - docker run -v "$(pwd):/project" -w /project nimlang/nim sh -c "nimble test"
+  - docker run -v "$(pwd):/project" -w /project nimlang/nim sh -c "nimble test -y"
   - docker run -v "$(pwd):/project" -w /project nimlang/nim sh -c "nimble docs"
